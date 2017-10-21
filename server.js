@@ -22,6 +22,7 @@ app.set('view engine', 'handlebars');
 
 // Cal out Method Override
 app.use(methodOverride('_method'));
+app.use(express.static(__dirname + '/public'));
 
 var mysql = require('mysql');
 
@@ -43,8 +44,8 @@ connection.connect(function(err) {
 
 
 // Use Handlebars to render the main index.html page with the movies in it.
-app.get('/', function(req, res) {
-	connection.query('SELECT * FROM burgers;', function(err, data) {
+app.get('/order', function(req, res) {
+	connection.query('SELECT * FROM burgers', function(err, data) {
 		if (err) {
 			return res.status(500).end();
 		}
@@ -53,9 +54,36 @@ app.get('/', function(req, res) {
 	});
 });
 
+// Create a new sandwich
+app.post('/sandwich', function(req, res) {
+	connection.query('INSERT INTO burgers (burger_name) VALUES (?)', [req.body.burger_name], function(err, result) {
+		if (err) {
+			return res.status(500).end();
+		}
+
+		// Send back the ID of the new movie
+		res.json({ id: result.insertId });
+		console.log({ id: result.insertId });
+	});
+});
+
+app.put('/sandwich/:id', function(req, res) {
+    connection.query(`UPDATE burgers SET devoured = true where id = ?`,
+    [req.params.id], function(err, result) {
+        if (err) {
+            // If an error occurred, send a generic server faliure
+            return res.status(500).end();
+        } else if (result.changedRows == 0) {
+			// If no rows were changed, then the ID must not exist, so 404
+			return res.status(404).end();
+		} else {
+			res.status(200).end();
+		}
+    });
+});
+
 // Requesting routes in from external file
 // require("./controllers/burgers_controllers")(app);
-
 
 // Start Server
 app.listen(PORT, function() {

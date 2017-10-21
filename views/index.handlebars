@@ -1,21 +1,104 @@
-<h1>Burgers Ordered</h1>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <div id="placeOrder">
+                <h2>Order your Sandwich HERE!!</h2>
+                    <form id="createSand" class="button-size">
+                        <textarea id="order" type="text"></textarea><br>
+                        <button id="submitSand" class="btn btn-lg btn-primary" type="submit">Place Order</button>
+                    </form>
+            </div>
+        </div>
+    </div>
 
-<ol>
-  {{#each burgers}}
-  <li>
-    <p>
-      {{this.id}}. {{this.burger_name}}
+    <div id="orderInfo" class="row">
+        <div class="col-md-6">
+            <div id="sandOrdered">
+                <h2>Sandwiches Ordered</h2>
+                    <table class="table">
+                        {{#each burgers}}
+                        {{#unless this.devoured}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.burger_name}}</td>
+                            <td class="text-right"><button data-burgerid="{{this.id}}" id='eatMe' class="btn btn-danger">Devour this Burger!!</button></td>
+                        </tr>
+                        {{/unless}}
+                        {{/each}}
+                    </table>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div id="sandConsumed">
+                <h2>Sandwiches Consumed</h2>
+                    <table class="table">
+                        {{#each burgers}}
+                        {{#if this.devoured}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.burger_name}}</td>   
+                        </tr>
+                        {{/if}}
+                        {{/each}}
+                    </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-      <button data-burgerid="{{this.id}}" class="eatMe">Devour this Burger!!</button>
-    </p>
-  </li>
-  {{/each}}
-</ol>
+<script type="text/javascript">
+    
+    $('#submitSand').on('click', function() {
+        console.log('Sandwich button selected');
 
-</each>
+        var sand = $('#order').val();
+        console.log('Sandwich Ordered: ', sand);
+        var newSand = {
+            burger_name: sand
+        }
+            // Send the POST request.
+        $.ajax("/sandwich", {
+        type: "POST",
+        data: newSand
+        }).then(
+            function() {
+                console.log("Added new sandwich!!");
+                // Reload the page to get the updated list
 
-<h2>Order a Burger Here!!</h2>
-<form id="createBurger" class="button-size">
-  <textarea type="text" name="burgerType"></textarea>
-  <button type="submit">Order Burger!</button>
-</form>
+            }
+        );
+    });
+
+    $(document).on('click','#eatMe', function(event) {
+    console.log('Devoured button selected');
+    // Make sure to preventDefault on a submit event.
+    event.preventDefault();
+
+    var id = $(this).data('burgerid');
+    console.log('Burger ID: ', id)
+
+    // Send the PUT request.
+    $.ajax("/sandwich/" + id, {
+      type: "PUT",
+      data: id
+    }).then(
+      function() {
+        console.log("updated id ", id);
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+
+    // Send the GET request.
+    $.ajax("/order/devoured", {
+      type: "GET"
+    }).then(
+      function() {
+        console.log(id + "devoured");
+        // Reload the page to get the updated list
+        location.reload();
+      }
+    );
+  });
+
+</script>
