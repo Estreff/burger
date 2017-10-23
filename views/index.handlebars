@@ -3,8 +3,9 @@
         <div class="col-md-12 text-center">
             <div id="placeOrder">
                 <h2>Order your Sandwich HERE!!</h2>
-                    <form id="createSand" class="button-size">
-                        <textarea id="order" type="text"></textarea><br>
+                 
+                    <form id="createSand" class="button-size" action="/sandwich" method="POST">
+                        <textarea id="order" type="text" name="sandwich_name" ></textarea><br>
                         <button id="submitSand" class="btn btn-lg btn-primary" type="submit">Place Order</button>
                     </form>
             </div>
@@ -19,9 +20,12 @@
                         {{#each burgers}}
                         {{#unless this.devoured}}
                         <tr>
-                            <td>{{this.id}}</td>
                             <td>{{this.burger_name}}</td>
-                            <td class="text-right"><button data-burgerid="{{this.id}}" id='eatMe' class="btn btn-danger">Devour this Burger!!</button></td>
+                            <td class="text-right">
+                                <form action="/sandwich/{{this.id}}?_method=PUT" method="POST">
+                                    <button type="submit" class="btn btn-danger" id="eatme">Devour this Burger!!</button>
+                                </form>        
+                            </td>
                         </tr>
                         {{/unless}}
                         {{/each}}
@@ -35,7 +39,6 @@
                         {{#each burgers}}
                         {{#if this.devoured}}
                         <tr>
-                            <td>{{this.id}}</td>
                             <td>{{this.burger_name}}</td>   
                         </tr>
                         {{/if}}
@@ -46,59 +49,3 @@
     </div>
 </div>
 
-<script type="text/javascript">
-    
-    $('#submitSand').on('click', function() {
-        console.log('Sandwich button selected');
-
-        var sand = $('#order').val();
-        console.log('Sandwich Ordered: ', sand);
-        var newSand = {
-            burger_name: sand
-        }
-            // Send the POST request.
-        $.ajax("/sandwich", {
-        type: "POST",
-        data: newSand
-        }).then(
-            function() {
-                console.log("Added new sandwich!!");
-                // Reload the page to get the updated list
-
-            }
-        );
-    });
-
-    $(document).on('click','#eatMe', function(event) {
-    console.log('Devoured button selected');
-    // Make sure to preventDefault on a submit event.
-    event.preventDefault();
-
-    var id = $(this).data('burgerid');
-    console.log('Burger ID: ', id)
-
-    // Send the PUT request.
-    $.ajax("/sandwich/" + id, {
-      type: "PUT",
-      data: id
-    }).then(
-      function() {
-        console.log("updated id ", id);
-        // Reload the page to get the updated list
-        location.reload();
-      }
-    );
-
-    // Send the GET request.
-    $.ajax("/order/devoured", {
-      type: "GET"
-    }).then(
-      function() {
-        console.log(id + "devoured");
-        // Reload the page to get the updated list
-        location.reload();
-      }
-    );
-  });
-
-</script>
