@@ -8,7 +8,7 @@ const exphbs = require("express-handlebars");
 const app = express();
 
 // Call out port to use with Express
-const PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3000;
 
 // Call out body-parse elements
 app.use(bodyParser.json());

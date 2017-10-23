@@ -33,5 +33,8 @@ var sandwich = require('../models/burgers.js');
         response.redirect('/order');     
     });
 
-
+    router.get('/*', function(request, response) {
+        response.redirect('/order');
+    });
+    
     module.exports = router;
