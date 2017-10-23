@@ -2,8 +2,8 @@ const mysql = require('mysql');
 var connection;
 // create mysql connection
 
-if (process.env.JAWSDB-URL) {
-	connection = mysql.createConnection(process.env.JAWSDB-URL);
+if (process.env.JAWSDB_URL) {
+	connection = mysql.createConnection(process.env.JAWSDB_URL);
 } else {
 	connection = mysql.createConnection({
 		host: 'localhost',
